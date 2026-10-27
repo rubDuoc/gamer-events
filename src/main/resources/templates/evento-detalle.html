@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${evento.nombre})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <a th:href="@{/eventos}">← Volver a eventos</a>
+
+    <article class="detalle">
+        <span class="tag" th:text="${evento.categoria}">Categoría</span>
+        <h1 th:text="${evento.nombre}">Nombre</h1>
+        <p th:text="${evento.descripcion}">Descripción</p>
+
+        <dl>
+            <dt>Fecha y hora</dt>
+            <dd th:text="${#temporals.format(evento.fecha, 'dd-MM-yyyy')} + ' a las ' + ${evento.hora}">fecha</dd>
+            <dt>Dirección</dt>
+            <dd th:text="${evento.direccion} + ', ' + ${evento.ubicacion}">dirección</dd>
+            <dt>Organizadores</dt>
+            <dd th:text="${#strings.listJoin(evento.organizadores, ', ')}">organizadores</dd>
+            <dt>Principales expositores</dt>
+            <dd th:text="${#strings.listJoin(evento.expositores, ', ')}">expositores</dd>
+        </dl>
+
+        <h2>Servicios disponibles</h2>
+        <ul class="servicios">
+            <li th:classappend="${evento.estacionamiento} ? 'si' : 'no'">Estacionamiento</li>
+            <li th:classappend="${evento.locomocionColectiva} ? 'si' : 'no'">Locomoción colectiva</li>
+            <li th:classappend="${evento.servicioComidas} ? 'si' : 'no'">Servicio de comidas</li>
+            <li th:classappend="${evento.alojamiento} ? 'si' : 'no'">Alojamiento</li>
+        </ul>
+    </article>
+</main>
+</body>
+</html>

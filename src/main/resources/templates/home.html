@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <section class="hero">
+        <h1>Encuentra tu próximo evento gamer</h1>
+        <p>Torneos, LAN parties, convenciones y talleres en todo Chile.</p>
+    </section>
+
+    <h2>Próximos eventos</h2>
+    <div class="grid">
+        <article class="card" th:each="e : ${proximos}">
+            <span class="tag" th:text="${e.categoria}">Categoría</span>
+            <h3 th:text="${e.nombre}">Nombre</h3>
+            <p class="meta" th:text="${#temporals.format(e.fecha, 'dd-MM-yyyy')} + ' · ' + ${e.ubicacion}">fecha · lugar</p>
+            <a th:href="@{/eventos/{id}(id=${e.id})}">Ver detalle →</a>
+        </article>
+    </div>
+
+    <h2>Eventos destacados ⭐</h2>
+    <div class="grid">
+        <article class="card destacado" th:each="e : ${destacados}">
+            <span class="tag" th:text="${e.categoria}">Categoría</span>
+            <h3 th:text="${e.nombre}">Nombre</h3>
+            <p th:text="${e.descripcion}">Descripción</p>
+            <a th:href="@{/eventos/{id}(id=${e.id})}">Ver detalle →</a>
+        </article>
+    </div>
+
+    <h2>Marcas asociadas</h2>
+    <div class="marcas">
+        <div class="marca" th:each="m : ${marcas}" th:text="${m}">Marca</div>
+    </div>
+</main>
+</body>
+</html>

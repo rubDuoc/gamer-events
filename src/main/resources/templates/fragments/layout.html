@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | Gamer Events'">Gamer Events</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:fragment="header" class="header">
+    <a th:href="@{/home}" class="logo">🎮 Gamer Events</a>
+    <nav>
+        <a th:href="@{/home}">Inicio</a>
+        <a th:href="@{/eventos}">Eventos</a>
+        <a th:href="@{/perfil}">Mi perfil</a>
+        <th:block sec:authorize="isAnonymous()">
+            <a th:href="@{/registro}">Registrarse</a>
+            <a th:href="@{/login}" class="btn">Iniciar sesión</a>
+        </th:block>
+        <th:block sec:authorize="isAuthenticated()">
+            <span class="usuario" sec:authentication="name"></span>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <button type="submit" class="btn">Cerrar sesión</button>
+            </form>
+        </th:block>
+    </nav>
+</header>
+</body>
+</html>

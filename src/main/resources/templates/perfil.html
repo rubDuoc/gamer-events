@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi perfil')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container form-box">
+    <h1>Mi perfil</h1>
+    <p class="meta" th:text="'Hola, ' + ${nombre}">Hola</p>
+
+    <div class="alert ok" th:if="${param.guardado}">Perfil guardado.</div>
+
+    <form th:action="@{/perfil}" th:object="${perfil}" method="post">
+        <label>Nombre de usuario
+            <input type="text" th:field="*{nombreUsuario}" required minlength="3" maxlength="30">
+            <span class="field-error" th:if="${#fields.hasErrors('nombreUsuario')}" th:errors="*{nombreUsuario}"></span>
+        </label>
+
+        <fieldset>
+            <legend>Avatar</legend>
+            <label class="opcion avatar" th:each="a : ${avatares}">
+                <input type="radio" th:field="*{avatar}" th:value="${a}">
+                <span th:text="${a}">🎮</span>
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Juegos de interés</legend>
+            <label class="opcion" th:each="j : ${juegosDisponibles}">
+                <input type="checkbox" th:field="*{juegos}" th:value="${j}">
+                <span th:text="${j}">Juego</span>
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Notificaciones</legend>
+            <label class="opcion"><input type="checkbox" th:field="*{notificarPorEmail}"> Recibir correos</label>
+            <label class="opcion"><input type="checkbox" th:field="*{notificarNuevosEventos}"> Avisarme de nuevos eventos</label>
+            <label class="opcion"><input type="checkbox" th:field="*{notificarRecordatorios}"> Recordatorios antes de un evento</label>
+        </fieldset>
+
+        <button type="submit" class="btn">Guardar perfil</button>
+    </form>
+</main>
+</body>
+</html>

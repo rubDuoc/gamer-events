@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Eventos')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <h1>Eventos</h1>
+
+    <form th:action="@{/eventos}" method="get" class="filtros">
+        <label>Categoría
+            <select name="categoria">
+                <option value="">Todas</option>
+                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}" th:selected="${c == categoria}"></option>
+            </select>
+        </label>
+        <label>Fecha
+            <input type="date" name="fecha" th:value="${fecha}">
+        </label>
+        <label>Ubicación
+            <select name="ubicacion">
+                <option value="">Todas</option>
+                <option th:each="u : ${ubicaciones}" th:value="${u}" th:text="${u}" th:selected="${u == ubicacion}"></option>
+            </select>
+        </label>
+        <button type="submit" class="btn">Buscar</button>
+        <a th:href="@{/eventos}">Limpiar</a>
+    </form>
+
+    <p th:if="${#lists.isEmpty(eventos)}">No hay eventos que coincidan con la búsqueda.</p>
+
+    <div class="grid">
+        <article class="card" th:each="e : ${eventos}">
+            <span class="tag" th:text="${e.categoria}">Categoría</span>
+            <h3 th:text="${e.nombre}">Nombre</h3>
+            <p class="meta" th:text="${#temporals.format(e.fecha, 'dd-MM-yyyy')} + ' ' + ${e.hora} + ' · ' + ${e.ubicacion}">fecha · lugar</p>
+            <a th:href="@{/eventos/{id}(id=${e.id})}">Ver detalle →</a>
+        </article>
+    </div>
+</main>
+</body>
+</html>
