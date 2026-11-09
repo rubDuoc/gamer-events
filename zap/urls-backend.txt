@@ -1,0 +1,8 @@
+http://localhost:8090/api/inicio
+http://localhost:8090/api/eventos
+http://localhost:8090/api/eventos?categoria=Torneo&ubicacion=Santiago
+http://localhost:8090/api/eventos/filtros
+http://localhost:8090/api/eventos/1
+http://localhost:8090/api/perfil
+http://localhost:8090/api/perfil/opciones
+http://localhost:8090/api/admin/usuarios

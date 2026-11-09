@@ -19,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -33,6 +35,8 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -132,6 +136,26 @@ class SeguridadWebTest {
                         .param("email", "jugador1@gamerevents.cl")
                         .param("password", "ClaveSegura123"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void respuestasIncluyenCabecerasDeSeguridad() throws Exception {
+        mvc.perform(get("/home"))
+                .andExpect(header().string("Content-Security-Policy", containsString("default-src 'self'")))
+                .andExpect(header().string("Content-Security-Policy", containsString("frame-ancestors 'none'")))
+                .andExpect(header().string("X-Frame-Options", "DENY"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"));
+    }
+
+    @Test
+    void entradaDelUsuarioSeEscapaEnElHtml() throws Exception {
+        mvc.perform(post("/registro").with(csrf())
+                        .param("nombre", "\"><script>alert(1)</script>")
+                        .param("email", "no-es-correo")
+                        .param("password", "123"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("<script>alert(1)</script>"))))
+                .andExpect(content().string(containsString("&quot;&gt;&lt;script&gt;")));
     }
 
     @Test

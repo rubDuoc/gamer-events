@@ -31,6 +31,13 @@ public class WebSecurityConfig {
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
+            )
+            // Content Security Policy (hallazgo de ZAP, OWASP A05): el navegador solo carga recursos del propio
+            // sitio, no ejecuta scripts externos ni en linea, y la pagina no puede mostrarse dentro de un iframe
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+                    + "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"))
             );
         return http.build();
     }
