@@ -1,0 +1,43 @@
+# Levanta MySQL, el backend (API REST) y el frontend (web).
+# Las claves se leen desde el archivo .env (no se sube al repositorio; ver .env.example).
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en el archivo .env}
+      MYSQL_DATABASE: gamer_events
+    volumes:
+      - ./database/script.sql:/docker-entrypoint-initdb.d/script.sql:ro
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      # Por TCP: asi solo responde cuando MySQL termino de ejecutar el script inicial
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # Sin "ports": la base de datos solo es accesible desde la red interna de Docker
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/gamer_events
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en el archivo .env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8090
+    depends_on:
+      - backend
+    ports:
+      - "8082:8082"
+
+volumes:
+  mysql-data:
