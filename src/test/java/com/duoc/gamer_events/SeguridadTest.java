@@ -49,7 +49,7 @@ class SeguridadTest {
     }
 
     @Test
-    void loginConUsuariosEnMemoria() throws Exception {
+    void loginConUsuariosDeLaBaseDeDatos() throws Exception {
         mvc.perform(formLogin().user("jugador1@gamerevents.cl").password("Jugador1#2026")).andExpect(authenticated());
         mvc.perform(formLogin().user("jugador2@gamerevents.cl").password("Jugador2#2026")).andExpect(authenticated());
         mvc.perform(formLogin().user("admin@gamerevents.cl").password("Admin#2026")).andExpect(authenticated());
