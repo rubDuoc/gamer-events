@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS eventos (
     servicio_comidas     BIT(1)       NOT NULL,
     alojamiento          BIT(1)       NOT NULL,
     destacado            BIT(1)       NOT NULL,
+    autor_email          VARCHAR(150) DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -129,3 +130,72 @@ INSERT INTO evento_expositores (evento_id, orden, expositor) VALUES
 (4, 0, 'Runner Camila ''Kami'' Soto'), (4, 1, 'Runner Diego Vera'),
 (5, 0, 'Cosplayer Fernanda Lagos'), (5, 1, 'Ilustrador Tomas Herrera'),
 (6, 0, 'Instructora Paula Mendez');
+
+-- ---------------------------------------------------------------------
+-- Experiencia 2: fotos y videos, comentarios, valoraciones y compartidos
+-- ---------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS medias (
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    evento_id    BIGINT       NOT NULL,
+    tipo         ENUM('FOTO','VIDEO') NOT NULL,
+    contenido    LONGBLOB     DEFAULT NULL,   -- solo fotos (JPG, PNG o WEBP verificadas, maximo 2 MB)
+    content_type VARCHAR(30)  DEFAULT NULL,
+    video_id     VARCHAR(11)  DEFAULT NULL,   -- solo videos: id de YouTube
+    autor_email  VARCHAR(150) NOT NULL,
+    fecha        DATETIME(6)  NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_medias_evento FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS comentarios (
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    evento_id  BIGINT       NOT NULL,
+    usuario_id BIGINT       NOT NULL,
+    texto      VARCHAR(500) NOT NULL,
+    fecha      DATETIME(6)  NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_comentarios_evento FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE,
+    CONSTRAINT fk_comentarios_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS valoraciones (
+    id         BIGINT      NOT NULL AUTO_INCREMENT,
+    evento_id  BIGINT      NOT NULL,
+    usuario_id BIGINT      NOT NULL,
+    puntaje    INT         NOT NULL CHECK (puntaje BETWEEN 1 AND 5),
+    fecha      DATETIME(6) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_valoracion_evento_usuario (evento_id, usuario_id),
+    CONSTRAINT fk_valoraciones_evento FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE,
+    CONSTRAINT fk_valoraciones_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS compartidos (
+    id         BIGINT      NOT NULL AUTO_INCREMENT,
+    evento_id  BIGINT      NOT NULL,
+    usuario_id BIGINT      NOT NULL,
+    red        ENUM('SITIO','X','FACEBOOK','WHATSAPP') NOT NULL,
+    fecha      DATETIME(6) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_compartidos_evento FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE,
+    CONSTRAINT fk_compartidos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO medias (evento_id, tipo, video_id, autor_email, fecha) VALUES
+(1, 'VIDEO', 'dQw4w9WgXcQ', 'admin@gamerevents.cl', '2026-11-01 10:00:00');
+
+INSERT INTO comentarios (evento_id, usuario_id, texto, fecha) VALUES
+(1, 1, 'Ya tengo equipo armado, nos vemos en la fase de grupos!', '2026-11-02 18:30:00'),
+(1, 2, 'Habra transmision en vivo del torneo?', '2026-11-03 20:15:00'),
+(5, 1, 'Voy con cosplay de Link, alguien mas se suma?', '2026-11-05 12:00:00');
+
+INSERT INTO valoraciones (evento_id, usuario_id, puntaje, fecha) VALUES
+(1, 1, 5, '2026-11-02 18:31:00'),
+(1, 2, 4, '2026-11-03 20:16:00'),
+(5, 1, 5, '2026-11-05 12:01:00');
+
+INSERT INTO compartidos (evento_id, usuario_id, red, fecha) VALUES
+(1, 1, 'SITIO', '2026-11-02 18:35:00'),
+(5, 2, 'SITIO', '2026-11-06 09:00:00'),
+(5, 2, 'WHATSAPP', '2026-11-06 09:01:00');

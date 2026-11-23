@@ -68,4 +68,8 @@ public class Evento {
     private boolean servicioComidas;
     private boolean alojamiento;
     private boolean destacado;
+
+    // Usuario que publico el evento (los eventos de los datos iniciales no tienen autor)
+    @Column(length = 150)
+    private String autorEmail;
 }

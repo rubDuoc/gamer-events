@@ -1,13 +1,19 @@
 package com.duoc.gamer_events.controller.api;
 
+import com.duoc.gamer_events.dto.EventoRequest;
 import com.duoc.gamer_events.dto.FiltrosResponse;
 import com.duoc.gamer_events.dto.InicioResponse;
 import com.duoc.gamer_events.model.Evento;
 import com.duoc.gamer_events.service.EventoService;
 import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +50,13 @@ public class EventoApiController {
     @GetMapping("/eventos/filtros")
     public FiltrosResponse filtros() {
         return new FiltrosResponse(eventoService.categorias(), eventoService.ubicaciones());
+    }
+
+    // [Privada] publicar un evento; el autor es el usuario del token
+    @PostMapping("/eventos")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Evento publicar(@Valid @RequestBody EventoRequest request, Authentication auth) {
+        return eventoService.publicar(request, auth.getName());
     }
 
     // [Privada] detalle de un evento

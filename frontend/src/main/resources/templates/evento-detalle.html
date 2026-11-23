@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head(${evento.nombre})}"></head>
+<head th:replace="~{fragments/layout :: head(${evento.nombre})}"><title>Gamer Events</title></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 
 <main class="container">
     <a th:href="@{/eventos}">← Volver a eventos</a>
 
+    <div class="alert ok" th:if="${param.publicado}">Evento publicado. Ahora puedes agregarle fotos y videos.</div>
+    <div class="alert ok" th:if="${mensaje}" th:text="${mensaje}">Mensaje</div>
+    <div class="alert error" th:if="${error}" th:text="${error}">Error</div>
+
     <article class="detalle">
         <span class="tag" th:text="${evento.categoria}">Categoría</span>
         <h1 th:text="${evento.nombre}">Nombre</h1>
+        <p class="meta" th:if="${evento.autorEmail}" th:text="'Publicado por ' + ${evento.autorEmail}">autor</p>
         <p th:text="${evento.descripcion}">Descripción</p>
 
         <dl>
@@ -31,6 +36,93 @@
             <li th:classappend="${evento.alojamiento} ? 'si' : 'no'">Alojamiento</li>
         </ul>
     </article>
+
+    <!-- Fotos y videos -->
+    <section class="detalle" id="galeria">
+        <h2>Fotos y videos</h2>
+        <p class="meta" th:if="${#lists.isEmpty(media)}">Este evento aún no tiene fotos ni videos.</p>
+        <div class="galeria">
+            <figure th:each="m : ${media}" class="media-item">
+                <img th:if="${m.tipo == 'FOTO'}" th:src="@{/eventos/{id}/fotos/{mid}(id=${evento.id}, mid=${m.id})}"
+                     alt="Foto del evento" loading="lazy">
+                <iframe th:if="${m.tipo == 'VIDEO'}" th:src="@{https://www.youtube-nocookie.com/embed/{v}(v=${m.videoId})}"
+                        title="Video del evento" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+                        sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
+                <form th:if="${puedeEditarMedia}" th:action="@{/eventos/{id}/media/{mid}/eliminar(id=${evento.id}, mid=${m.id})}" method="post">
+                    <button type="submit" class="link-peligro">Quitar</button>
+                </form>
+            </figure>
+        </div>
+
+        <div th:if="${puedeEditarMedia}" class="fila subida">
+            <form th:action="@{/eventos/{id}/fotos(id=${evento.id})}" method="post" enctype="multipart/form-data">
+                <label>Agregar foto (JPG, PNG o WEBP, máximo 2 MB)
+                    <input type="file" name="archivo" accept="image/jpeg,image/png,image/webp" required>
+                </label>
+                <button type="submit" class="btn">Subir foto</button>
+            </form>
+            <form th:action="@{/eventos/{id}/videos(id=${evento.id})}" method="post">
+                <label>Agregar video de YouTube
+                    <input type="url" name="url" required maxlength="200" placeholder="https://www.youtube.com/watch?v=...">
+                </label>
+                <button type="submit" class="btn">Agregar video</button>
+            </form>
+        </div>
+        <p class="meta" th:unless="${puedeEditarMedia}">Solo quien publicó el evento puede agregar fotos y videos.</p>
+    </section>
+
+    <!-- Valoracion -->
+    <section class="detalle" id="valoracion">
+        <h2>Valoración</h2>
+        <p class="puntaje">
+            <strong th:text="${valoracion.cantidad > 0} ? ${valoracion.promedio} + ' / 5' : 'Sin valoraciones'">4.5 / 5</strong>
+            <span class="meta" th:text="'(' + ${valoracion.cantidad} + ' valoraciones)'"></span>
+        </p>
+        <form th:action="@{/eventos/{id}/valoracion(id=${evento.id})}" method="post" class="estrellas">
+            <span>Tu valoración:</span>
+            <label th:each="n : ${#numbers.sequence(1, 5)}" class="estrella">
+                <input type="radio" name="puntaje" th:value="${n}" th:checked="${valoracion.miPuntaje == n}" required>
+                <span th:text="${n} + '★'">1★</span>
+            </label>
+            <button type="submit" class="btn">Valorar</button>
+        </form>
+    </section>
+
+    <!-- Compartir -->
+    <section class="detalle" id="compartir">
+        <h2>Compartir</h2>
+        <div class="compartir">
+            <form th:action="@{/eventos/{id}/compartir(id=${evento.id})}" method="post">
+                <button type="submit" class="btn">Compartir en Gamer Events</button>
+            </form>
+            <a class="btn secundario" th:href="@{/eventos/{id}/compartir/x(id=${evento.id})}" target="_blank" rel="noopener noreferrer">X</a>
+            <a class="btn secundario" th:href="@{/eventos/{id}/compartir/facebook(id=${evento.id})}" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a class="btn secundario" th:href="@{/eventos/{id}/compartir/whatsapp(id=${evento.id})}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </div>
+    </section>
+
+    <!-- Comentarios -->
+    <section class="detalle" id="comentarios">
+        <h2>Comentarios</h2>
+        <p class="meta" th:if="${#lists.isEmpty(comentarios)}">Sé el primero en comentar.</p>
+        <div class="comentario" th:each="c : ${comentarios}">
+            <p class="meta">
+                <strong th:text="${c.autor}">Autor</strong>
+                · <span th:text="${#temporals.format(c.fecha, 'dd-MM-yyyy HH:mm')}">fecha</span>
+            </p>
+            <p th:text="${c.texto}">Texto</p>
+            <form th:if="${esAdmin or c.autorEmail == emailUsuario}"
+                  th:action="@{/eventos/{id}/comentarios/{cid}/eliminar(id=${evento.id}, cid=${c.id})}" method="post">
+                <button type="submit" class="link-peligro">Eliminar</button>
+            </form>
+        </div>
+        <form th:action="@{/eventos/{id}/comentarios(id=${evento.id})}" method="post">
+            <label>Escribe un comentario
+                <textarea name="texto" rows="3" required minlength="3" maxlength="500"></textarea>
+            </label>
+            <button type="submit" class="btn">Comentar</button>
+        </form>
+    </section>
 </main>
 </body>
 </html>

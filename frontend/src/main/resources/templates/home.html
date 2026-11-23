@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<head th:replace="~{fragments/layout :: head('Inicio')}"><title>Gamer Events</title></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 
@@ -29,6 +29,16 @@
             <a th:href="@{/eventos/{id}(id=${e.id})}">Ver detalle →</a>
         </article>
     </div>
+
+    <h2>Compartidos por la comunidad</h2>
+    <p class="meta" th:if="${#lists.isEmpty(compartidos)}">Aún nadie ha compartido eventos.</p>
+    <ul class="compartidos">
+        <li th:each="c : ${compartidos}">
+            <strong th:text="${c.usuario}">Usuario</strong> compartió
+            <a th:href="@{/eventos/{id}(id=${c.eventoId})}" th:text="${c.evento}">Evento</a>
+            <span class="meta" th:text="${#temporals.format(c.fecha, 'dd-MM-yyyy HH:mm')}">fecha</span>
+        </li>
+    </ul>
 
     <h2>Marcas asociadas</h2>
     <div class="marcas">

@@ -34,3 +34,5 @@ build/
 
 ### Variables de entorno con claves ###
 .env
+.sonar/
+.sonar/

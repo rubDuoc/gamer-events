@@ -29,4 +29,5 @@ public class Evento {
     private boolean servicioComidas;
     private boolean alojamiento;
     private boolean destacado;
+    private String autorEmail;
 }

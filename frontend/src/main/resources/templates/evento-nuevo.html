@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Publicar evento')}"><title>Gamer Events</title></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container form-box ancho">
+    <a th:href="@{/eventos}">← Volver a eventos</a>
+    <h1>Publicar un evento</h1>
+
+    <form th:action="@{/eventos/nuevo}" th:object="${eventoForm}" method="post">
+        <!-- Error devuelto por la API del backend (por ejemplo, una validacion del servidor) -->
+        <div class="alert error" th:if="${#fields.hasGlobalErrors()}">
+            <span th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</span>
+        </div>
+        <label>Nombre del evento *
+            <input type="text" th:field="*{nombre}" required minlength="5" maxlength="150">
+            <span class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+        </label>
+
+        <div class="fila">
+            <label>Categoría *
+                <select th:field="*{categoria}" required>
+                    <option value="">Selecciona</option>
+                    <option th:each="c : ${categorias}" th:value="${c}" th:text="${c}"></option>
+                </select>
+                <span class="field-error" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></span>
+            </label>
+            <label>Fecha *
+                <input type="date" th:field="*{fecha}" required>
+                <span class="field-error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></span>
+            </label>
+            <label>Hora *
+                <input type="time" th:field="*{hora}" required>
+                <span class="field-error" th:if="${#fields.hasErrors('hora')}" th:errors="*{hora}"></span>
+            </label>
+        </div>
+
+        <div class="fila">
+            <label>Ciudad *
+                <input type="text" th:field="*{ubicacion}" required minlength="3" maxlength="50">
+                <span class="field-error" th:if="${#fields.hasErrors('ubicacion')}" th:errors="*{ubicacion}"></span>
+            </label>
+            <label>Dirección *
+                <input type="text" th:field="*{direccion}" required minlength="5" maxlength="200">
+                <span class="field-error" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></span>
+            </label>
+        </div>
+
+        <label>Descripción *
+            <textarea th:field="*{descripcion}" rows="4" required minlength="20" maxlength="500"></textarea>
+            <span class="field-error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></span>
+        </label>
+
+        <div class="fila">
+            <label>Organizadores (separados por coma)
+                <input type="text" th:field="*{organizadores}" maxlength="300">
+                <span class="field-error" th:if="${#fields.hasErrors('organizadores')}" th:errors="*{organizadores}"></span>
+            </label>
+            <label>Principales expositores (separados por coma)
+                <input type="text" th:field="*{expositores}" maxlength="300">
+                <span class="field-error" th:if="${#fields.hasErrors('expositores')}" th:errors="*{expositores}"></span>
+            </label>
+        </div>
+
+        <fieldset>
+            <legend>Servicios disponibles</legend>
+            <label class="opcion"><input type="checkbox" th:field="*{estacionamiento}"> Estacionamiento</label>
+            <label class="opcion"><input type="checkbox" th:field="*{locomocionColectiva}"> Locomoción colectiva</label>
+            <label class="opcion"><input type="checkbox" th:field="*{servicioComidas}"> Servicio de comidas</label>
+            <label class="opcion"><input type="checkbox" th:field="*{alojamiento}"> Alojamiento</label>
+        </fieldset>
+
+        <button type="submit" class="btn">Publicar evento</button>
+    </form>
+</main>
+</body>
+</html>

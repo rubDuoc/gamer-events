@@ -34,9 +34,9 @@ public class WebSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(requests -> requests
-                // APIs publicas: login, registro e inicio
+                // APIs publicas: login, registro, inicio y eventos compartidos por la comunidad
                 .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/registro").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/inicio").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/inicio", "/api/compartidos/recientes").permitAll()
                 // Solo administradores
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Todo lo demas (eventos, perfil) requiere token

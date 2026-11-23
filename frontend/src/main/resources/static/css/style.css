@@ -149,3 +149,27 @@ dd { margin: 0; }
 .servicios li.si { background: rgba(34, 197, 94, 0.15); color: var(--ok); }
 .servicios li.si::before { content: "✔ "; }
 .servicios li.no { background: var(--border); color: var(--muted); text-decoration: line-through; }
+
+/* ---------- Experiencia 2: publicar eventos, galeria, valoracion, compartir y comentarios ---------- */
+.encabezado { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.form-box.ancho { max-width: 860px; }
+.fila { display: flex; flex-wrap: wrap; gap: 16px; }
+.fila > label, .fila > form { flex: 1 1 220px; }
+textarea, input[type="file"], input[type="url"], input[type="time"] {
+    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font: inherit;
+}
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+.media-item { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
+.media-item img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; display: block; }
+.media-item iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; display: block; }
+.subida { margin-top: 12px; align-items: flex-end; }
+.puntaje strong { font-size: 1.6rem; color: var(--accent-2); }
+.estrellas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.estrella { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.compartir { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn.secundario { background: transparent; border: 1px solid var(--accent); color: var(--text); }
+.comentario { border-bottom: 1px solid var(--border); padding: 8px 0; }
+.link-peligro { background: none; border: 0; color: var(--error); cursor: pointer; padding: 0; font: inherit; }
+.compartidos { list-style: none; padding: 0; }
+.compartidos li { padding: 8px 0; border-bottom: 1px solid var(--border); }
