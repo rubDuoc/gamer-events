@@ -30,6 +30,16 @@
         </article>
     </div>
 
+    <h2>Compartidos por la comunidad</h2>
+    <p class="meta" th:if="${#lists.isEmpty(compartidos)}">Aún nadie ha compartido eventos.</p>
+    <ul class="compartidos">
+        <li th:each="c : ${compartidos}">
+            <strong th:text="${c.usuario}">Usuario</strong> compartió
+            <a th:href="@{/eventos/{id}(id=${c.eventoId})}" th:text="${c.evento}">Evento</a>
+            <span class="meta" th:text="${#temporals.format(c.fecha, 'dd-MM-yyyy HH:mm')}">fecha</span>
+        </li>
+    </ul>
+
     <h2>Marcas asociadas</h2>
     <div class="marcas">
         <div class="marca" th:each="m : ${marcas}" th:text="${m}">Marca</div>

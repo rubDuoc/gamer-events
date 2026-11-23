@@ -22,6 +22,7 @@ public class HomeController {
         model.addAttribute("proximos", inicio.proximos());
         model.addAttribute("destacados", inicio.destacados());
         model.addAttribute("marcas", inicio.marcas());
+        model.addAttribute("compartidos", backendClient.compartidosRecientes());
         return "home";
     }
 

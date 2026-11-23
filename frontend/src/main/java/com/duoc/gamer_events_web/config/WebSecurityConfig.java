@@ -33,11 +33,13 @@ public class WebSecurityConfig {
                 .permitAll()
             )
             // Content Security Policy (hallazgo de ZAP, OWASP A05): el navegador solo carga recursos del propio
-            // sitio, no ejecuta scripts externos ni en linea, y la pagina no puede mostrarse dentro de un iframe
+            // sitio, no ejecuta scripts externos ni en linea, y la pagina no puede mostrarse dentro de un iframe.
+            // Unica excepcion: los videos de los eventos se incrustan solo desde youtube-nocookie.com
             .headers(headers -> headers
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
                     "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
-                    + "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"))
+                    + "frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; "
+                    + "frame-ancestors 'none'"))
             );
         return http.build();
     }

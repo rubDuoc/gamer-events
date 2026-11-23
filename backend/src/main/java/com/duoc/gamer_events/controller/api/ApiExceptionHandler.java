@@ -36,6 +36,13 @@ public class ApiExceptionHandler {
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Datos invalidos", detalles));
     }
 
+    // Subida de archivos: falta el archivo o supera el limite del servidor
+    @ExceptionHandler({org.springframework.web.multipart.support.MissingServletRequestPartException.class,
+            org.springframework.web.multipart.MaxUploadSizeExceededException.class})
+    public ResponseEntity<ErrorResponse> archivoInvalido(Exception e) {
+        return responder(HttpStatus.BAD_REQUEST, "Archivo ausente o demasiado grande (maximo 2 MB)");
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> jsonInvalido(HttpMessageNotReadableException e) {
         return responder(HttpStatus.BAD_REQUEST, "El cuerpo de la peticion no es un JSON valido");
