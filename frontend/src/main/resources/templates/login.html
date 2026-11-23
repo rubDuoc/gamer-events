@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Iniciar sesión')}"></head>
+<head th:replace="~{fragments/layout :: head('Iniciar sesión')}"><title>Gamer Events</title></head>
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 
@@ -14,7 +14,7 @@
 
     <form th:action="@{/login}" method="post">
         <label>Correo
-            <input type="email" name="username" required autofocus>
+            <input type="email" name="username" required>
         </label>
         <label>Contraseña
             <input type="password" name="password" required>

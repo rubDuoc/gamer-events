@@ -13,7 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,7 +78,25 @@ public class MediaService {
         return MediaResponse.from(mediaRepository.save(media));
     }
 
+    // Hallazgo SonarQube java:S6218: un record con un arreglo debe comparar y mostrar el contenido del arreglo
     public record Archivo(byte[] contenido, String contentType) {
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof Archivo otro
+                    && Arrays.equals(contenido, otro.contenido)
+                    && Objects.equals(contentType, otro.contentType);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * Arrays.hashCode(contenido) + Objects.hashCode(contentType);
+        }
+
+        @Override
+        public String toString() {
+            return "Archivo[contentType=" + contentType + ", bytes=" + (contenido == null ? 0 : contenido.length) + "]";
+        }
     }
 
     // El contenido se lee dentro de la transaccion (la columna es LAZY)
